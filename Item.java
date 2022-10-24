@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 /**
- * Write a description of class Item here.
+ * This class models an item object in the game.
  *
  * @author Colin Francis
  * @version 2022.10.23
