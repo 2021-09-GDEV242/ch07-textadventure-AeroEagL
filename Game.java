@@ -1,4 +1,5 @@
 import java.util.Stack;
+import java.util.ArrayList;
 /**
  *  This class is the main class of the "World of Zuul" application. 
  *  "World of Zuul" is a very simple, text based adventure game.  Users 
@@ -22,8 +23,10 @@ public class Game
     private Parser parser;
     private Room currentRoom;
     Stack<Room> stack = new Stack<Room>();
-    int maxNumberOfMoves = 5;
-    static int currentNumberOfMoves = 0;
+    int maxNumberOfMoves = 30;
+    int currentNumberOfMoves = 0;
+    ArrayList<Item> inventory = new ArrayList<Item>();
+    double currentWeight = 0;
     
     /**
      * Create the game and initialise its internal map.
@@ -44,26 +47,55 @@ public class Game
             helpDesk, testingCenter, studyHall, cafeteria, researchRoom,
             trapRoom;
       
+            
+        ArrayList<Item> gymArray = new ArrayList<Item>(); 
+        gymArray.add(0, new Item("basketball", 1));
+        
+        ArrayList<Item> cafeteriaArray = new ArrayList<Item>();
+        cafeteriaArray.add(0, new Item("fries", 0.5));
+        
+        ArrayList<Item> helpDeskArray = new ArrayList<Item>();
+        helpDeskArray.add(0, new Item("keys", 0.2));
+        
+        ArrayList<Item> testingCenterArray = new ArrayList<Item>();
+        testingCenterArray.add(0, new Item("pencil", 0.1));
+        testingCenterArray.add(1, new Item("paper", 0.15));
+        
+        ArrayList<Item> outsideArray = new ArrayList<Item>();
+        ArrayList<Item> theaterArray = new ArrayList<Item>();
+        ArrayList<Item> pubArray = new ArrayList<Item>();
+        ArrayList<Item> computerLabArray = new ArrayList<Item>();
+        ArrayList<Item> officeArray = new ArrayList<Item>();
+        ArrayList<Item> eastEntranceGateArray = new ArrayList<Item>();
+        ArrayList<Item> westEntranceGateArray = new ArrayList<Item>();
+        ArrayList<Item> northEntranceGateArray = new ArrayList<Item>();
+        ArrayList<Item> poolArray = new ArrayList<Item>();
+        ArrayList<Item> scienceLabArray = new ArrayList<Item>();
+        ArrayList<Item> mathRoomArray = new ArrayList<Item>();
+        ArrayList<Item> studyHallArray = new ArrayList<Item>();
+        ArrayList<Item> researchRoomArray = new ArrayList<Item>();
+        ArrayList<Item> trapRoomArray = new ArrayList<Item>();
+        
         // create the rooms
-        outside = new Room("outside the main entrance of the university");
-        theater = new Room("in a lecture theater");
-        pub = new Room("in the campus pub");
-        computerLab = new Room("in a computer lab");
-        office = new Room("in the computing admin office");
-        gym = new Room("at the campus gym");
-        eastEntranceGate = new Room("at the east entrance gate");
-        westEntranceGate = new Room("at the west entrance gate");
-        northEntranceGate = new Room("at the north entrance gate");
-        pool = new Room("at the campus pool");
-        scienceLab = new Room("in a science lab");
-        mathRoom = new Room("in a math classroom");
-        helpDesk = new Room("at the campus help desk");
-        testingCenter = new Room("at the testing center");
-        studyHall = new Room("at the study hall");
-        cafeteria = new Room("at the cafeteria");
-        researchRoom = new Room("in a research room");
+        outside = new Room("outside the main entrance of the university", outsideArray);
+        theater = new Room("in a lecture theater", theaterArray);
+        pub = new Room("in the campus pub", pubArray);
+        computerLab = new Room("in a computer lab", computerLabArray);
+        office = new Room("in the computing admin office", officeArray);
+        gym = new Room("at the campus gym", gymArray);
+        eastEntranceGate = new Room("at the east entrance gate", eastEntranceGateArray);
+        westEntranceGate = new Room("at the west entrance gate", westEntranceGateArray);
+        northEntranceGate = new Room("at the north entrance gate", northEntranceGateArray);
+        pool = new Room("at the campus pool", poolArray);
+        scienceLab = new Room("in a science lab", scienceLabArray);
+        mathRoom = new Room("in a math classroom", mathRoomArray);
+        helpDesk = new Room("at the campus help desk", helpDeskArray);
+        testingCenter = new Room("at the testing center", testingCenterArray);
+        studyHall = new Room("at the study hall", testingCenterArray);
+        cafeteria = new Room("at the cafeteria", cafeteriaArray);
+        researchRoom = new Room("in a research room", researchRoomArray);
         trapRoom = new Room("now trapped in a dark room without an exit \n"
-                            + "after falling through a trapped door");
+                            + "after falling through a trapped door", trapRoomArray);
         
                 
         // initialise room exits
@@ -150,6 +182,8 @@ public class Game
         //6,1
         researchRoom.setExit("north", scienceLab);
         
+        
+        
         currentRoom = outside;  // start game outside
     }
     
@@ -197,7 +231,7 @@ public class Game
         System.out.println("\nType '" + CommandWord.HELP + "' if you need help.");
         System.out.println("\nYou can only move between " + maxNumberOfMoves + " rooms before");
         System.out.println("you starve to death. Try to find a key to get out.\n");
-        System.out.println(currentRoom.getLongDescription());
+        System.out.println(currentRoom.getLongDescription(currentWeight));
     }
 
     /**
@@ -239,6 +273,16 @@ public class Game
             case BACK:
                 back(command);
                 break;
+                
+            case TAKE:
+                take(command.getSecondWord());
+                break;
+                
+            case DROP:
+                drop(command.getSecondWord());
+                break;
+                
+                
         }
         return wantToQuit;
     }
@@ -285,7 +329,7 @@ public class Game
             currentNumberOfMoves++;
             stack.push(currentRoom);
             currentRoom = nextRoom;
-            System.out.println(currentRoom.getLongDescription());
+            System.out.println(currentRoom.getLongDescription(currentWeight));
         }
     }
     
@@ -294,7 +338,7 @@ public class Game
      */
     private void look()
     {
-        System.out.println(currentRoom.getLongDescription());
+        System.out.println(currentRoom.getLongDescription(currentWeight));
     }
     
     /**
@@ -322,7 +366,7 @@ public class Game
         {
             currentRoom = stack.pop();
             currentNumberOfMoves++;
-            System.out.println(currentRoom.getLongDescription());
+            System.out.println(currentRoom.getLongDescription(currentWeight));
         }
         else
         {
@@ -347,10 +391,46 @@ public class Game
                 currentRoom = stack.pop();//stack of rooms to trace through
                 currentNumberOfMoves++;
             }
-            System.out.println(currentRoom.getLongDescription());
+            System.out.println(currentRoom.getLongDescription(currentWeight));
         }
     }
+    
+    /**
+     * Picks up an item to put into inventory
+     */
+    private void take(String input)
+    {
 
+        for(int i = 0; i < currentRoom.getItemsInRoom().size(); i++)
+        {
+            if(currentRoom.getItemsInRoom().get(i).getName().equals(input))
+            {
+                currentWeight += currentRoom.getItemsInRoom().get(i).getWeight();
+                System.out.println(input + " was taken by you and is now\nin your inventory.");
+                inventory.add(currentRoom.getItemInRoom(i));
+            }
+        }
+    }
+    
+    /**
+     * Drops an item from inventory
+     */
+    private void drop(String input)
+    {
+        for(int i = 0; i < inventory.size(); i++)
+        {
+            if(inventory.get(i).getName().equals(input))
+            {
+                currentWeight -= inventory.get(i).getWeight();
+                System.out.println(input + " was dropped by you and is now\non the floor " +
+                currentRoom.getShortDescription());
+                currentRoom.setItemInRoom(inventory.get(i));
+                inventory.remove(inventory.get(i));
+            }
+        }
+    }
+    
+    
     /** 
      * "Quit" was entered. Check the rest of the command to see
      * whether we really quit the game.
