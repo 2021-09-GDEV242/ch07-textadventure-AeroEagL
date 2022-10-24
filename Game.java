@@ -27,6 +27,7 @@ public class Game
     int currentNumberOfMoves = 0;
     ArrayList<Item> inventory = new ArrayList<Item>();
     double currentWeight = 0;
+    double maxWeight = 1.2;
     
     /**
      * Create the game and initialise its internal map.
@@ -230,7 +231,8 @@ public class Game
         System.out.println("World of Zuul is a new, incredibly boring adventure game.");
         System.out.println("\nType '" + CommandWord.HELP + "' if you need help.");
         System.out.println("\nYou can only move between " + maxNumberOfMoves + " rooms before");
-        System.out.println("you starve to death. Try to find a key to get out.\n");
+        System.out.println("you starve to death. Try to find a key to get out.\n" +
+            "You can only carry 1.2 pounds of items at a time.\n");
         System.out.println(currentRoom.getLongDescription(currentWeight));
     }
 
@@ -405,9 +407,18 @@ public class Game
         {
             if(currentRoom.getItemsInRoom().get(i).getName().equals(input))
             {
-                currentWeight += currentRoom.getItemsInRoom().get(i).getWeight();
-                System.out.println(input + " was taken by you and is now\nin your inventory.");
-                inventory.add(currentRoom.getItemInRoom(i));
+                if(currentRoom.getItemsInRoom().get(i).getWeight() + currentWeight > maxWeight)
+                {
+                    System.out.println("Picking that up would exceed" +
+                        " the weight limit(1.2 pounds)!");
+                }
+                else
+                {
+                    currentWeight += currentRoom.getItemsInRoom().get(i).getWeight();
+                    System.out.println(input + " was taken by you" +
+                        "and is now\nin your inventory.");
+                    inventory.add(currentRoom.getItemInRoom(i));
+                }
             }
         }
     }
