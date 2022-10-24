@@ -14,14 +14,15 @@
  * If the command had only one word, then the second word is <null>.
  * 
  * @author  Michael Kölling and David J. Barnes
- * @version 2016.02.29
+ * @author Colin Francis
+ * @version 2022.10.23
  */
 
 public class Command
 {
     private CommandWord commandWord;
     private String secondWord;
-
+    private int secondWordAsInt;
     /**
      * Create a command object. First and second words must be supplied, but
      * the second may be null.
@@ -34,6 +35,7 @@ public class Command
         this.commandWord = commandWord;
         this.secondWord = secondWord;
     }
+    
 
     /**
      * Return the command word (the first word) of this command.
@@ -52,6 +54,33 @@ public class Command
     {
         return secondWord;
     }
+    
+    /**
+     * This method returns the second phrase of the command as an int.
+     * @return the second phrase of the command, as an int.
+     */
+    public int getSecondWordAsInt()
+    {
+        return Integer.parseInt(secondWord);
+    }
+    
+    /**
+     * This method returns true if the second phrase in the command can be turned into an int.
+     * @return boolean determining if the second phrase can be turned into an int.
+     */
+    public boolean secondWordIsInt()
+    {
+        try
+        {
+            Integer.parseInt(secondWord);
+            return true;
+        }
+        catch (NumberFormatException e)
+        {
+            return false;
+        }
+
+    }
 
     /**
      * @return true if this command was not understood.
@@ -68,5 +97,6 @@ public class Command
     {
         return (secondWord != null);
     }
+    
 }
 
