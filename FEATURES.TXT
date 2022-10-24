@@ -1,0 +1,15 @@
+For initial Intermediate level: retrace steps with “back” command
+
+For initial Advanced level: Time limit(movement through room limit) and one-way trap door
+
+For extra credit, I didn’t realize that adding each of those features to items counts as more features for extra credit, until I was nearing the end of items.. so that is why I have a somewhat large item commit to GitHub, though I added multiple other commits afterwards.
+
+My extra credits:
+implement an item
+allow player to take item from a room
+allow player to drop item into a room
+implement a collection of items as Inventory so player may have multiple items
+Add inventory to room so room can hold multiple items
+Add weight to items so player can only carry specified weight
+Keys were added, as a way to escape the university through the gates.
+Eating gives the player more turns and weight lifting capacity
