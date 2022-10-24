@@ -1,4 +1,4 @@
-
+import java.util.ArrayList;
 /**
  * Write a description of class Item here.
  *
@@ -36,6 +36,47 @@ public class Item
     public String getName()
     {
         return name;
+    }
+    
+    /**
+     * The consumeKey method returns a boolean based on if there is a key in the array
+     * @param items the array list to check if there is a key in
+     * @return hasKey the boolean based on if there is a key in the item array
+     */
+    public boolean consumeKey(ArrayList<Item> items)
+    {
+        boolean hasKey = false;
+        
+        for(int i = 0; i < items.size(); i++)
+        {
+            if(items.get(i).getName().equals("keys"))
+            {
+                hasKey = true;
+            }
+        }
+        return hasKey;
+    }
+    
+    /**
+     * The consumeFries method returns a boolean based on if there are fries in the array
+     * @param items the array list to check if there are fries in
+     * @return hasFries the boolean based on if there are fries in the item array
+     */
+    public boolean consumeFries(ArrayList<Item> items)
+    {
+        boolean hasFries = false;
+        
+        for(int i = 0; i < items.size(); i++)
+        {
+            if(items.get(i).getName().equals("fries"))
+            {
+                System.out.println("You have consumed fries, and can now carry double"+
+                    " the previous weight and traverse double the amount of rooms!");
+                hasFries = true;
+                items.remove(items.get(i));
+            }
+        }
+        return hasFries;
     }
 
 }

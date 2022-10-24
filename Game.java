@@ -28,7 +28,8 @@ public class Game
     ArrayList<Item> inventory = new ArrayList<Item>();
     double currentWeight = 0;
     double maxWeight = 1.2;
-    
+    Item itemGet = new Item("",0);
+    boolean wantToQuit = false;
     /**
      * Create the game and initialise its internal map.
      */
@@ -243,7 +244,7 @@ public class Game
      */
     private boolean processCommand(Command command) 
     {
-        boolean wantToQuit = false;
+        wantToQuit = false;
 
         CommandWord commandWord = command.getCommandWord();
 
@@ -284,6 +285,9 @@ public class Game
                 drop(command.getSecondWord());
                 break;
                 
+            case UNLOCK:
+                unlock();
+                break;
                 
         }
         return wantToQuit;
@@ -324,7 +328,7 @@ public class Game
         Room nextRoom = currentRoom.getExit(direction);
 
         if (nextRoom == null) {
-            System.out.println("There is no door!");
+            System.out.println("There is no open door!");
         }
         
         else {
@@ -344,11 +348,21 @@ public class Game
     }
     
     /**
-     * The eat method lets you eat some fake food and pretends that you arent hungry.
+     * The eat method lets you eat some fake food and pretends that you arent hungry -- 
+     * Unless, of course, you hae fries. Then the eat method gives the player more stamina.
      */
     private void eat()
     {
-        System.out.println("You have eaten now and you are not hungry any more.");
+        if(itemGet.consumeFries(inventory))
+        {
+            currentWeight -= 0.5;
+            maxWeight *= 2;
+            maxNumberOfMoves *= 2;
+        }
+        else
+        {
+            System.out.println("You pretend to eat, as you wish you had fries.\n");
+        }
     }
     
     /**
@@ -416,7 +430,7 @@ public class Game
                 {
                     currentWeight += currentRoom.getItemsInRoom().get(i).getWeight();
                     System.out.println(input + " was taken by you" +
-                        "and is now\nin your inventory.");
+                        " and is now\nin your inventory.");
                     inventory.add(currentRoom.getItemInRoom(i));
                 }
             }
@@ -441,10 +455,36 @@ public class Game
         }
     }
     
+    /**
+     * The unlock method unlocks a gate if there is one near.
+     */
+    private void unlock()
+    {
+        if(currentRoom.getShortDescription().equals("at the west entrance gate") || 
+            currentRoom.getShortDescription().equals("at the north entrance gate") ||
+            currentRoom.getShortDescription().equals("at the east entrance gate"))
+            {
+                if(itemGet.consumeKey(inventory))
+                {
+                    System.out.println("You did it! You escaped the university in " + 
+                        currentNumberOfMoves + " moves!!\n");
+                    wantToQuit = true;
+                }
+                else
+                {
+                    System.out.println("You can't open the gate without a key...");
+                }
+            }
+        else
+        {
+            System.out.println("There isn't a door to open in this room..");
+        }
+    }
     
     /** 
      * "Quit" was entered. Check the rest of the command to see
      * whether we really quit the game.
+     * @param command The command to check the second word of.
      * @return true, if this command quits the game, false otherwise.
      */
     private boolean quit(Command command) 
